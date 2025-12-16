@@ -1,0 +1,4 @@
+[bandit]
+exclude_dirs = venv,env,.venv
+skips = B101  # Skip assert_used test
+
