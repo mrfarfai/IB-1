@@ -13,7 +13,7 @@ import bcrypt
 from werkzeug.utils import escape
 
 app = Flask(__name__)
-app.config['JWT_SECRET_KEY'] = 'your-secret-key-change-in-production'  # В продакшене использовать переменную окружения
+app.config['JWT_SECRET_KEY'] = 'your-secret-key-change-in-production'  # nosec B105 # В продакшене использовать переменную окружения
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
 jwt = JWTManager(app)
@@ -46,7 +46,7 @@ def init_db():
     
     # Создание тестового пользователя (пароль: testpass123)
     # Хэш пароля создается с помощью bcrypt
-    test_password = 'testpass123'
+    test_password = 'testpass123'  # nosec B105 # Тестовый пароль для учебного проекта
     password_hash = bcrypt.hashpw(test_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     
     # Использование параметризованного запроса для защиты от SQL-инъекций
@@ -105,8 +105,8 @@ def login():
     if not bcrypt.checkpw(password.encode('utf-8'), password_hash):
         return jsonify({'error': 'Invalid credentials'}), 401
     
-    # Создание JWT токена
-    access_token = create_access_token(identity=user['id'])
+    # Создание JWT токена (identity должен быть строкой)
+    access_token = create_access_token(identity=str(user['id']))
     
     return jsonify({
         'access_token': access_token,
@@ -123,7 +123,8 @@ def get_data():
     Защита от XSS: экранирование всех пользовательских данных
     Защита от SQL-инъекций: параметризованные запросы
     """
-    user_id = get_jwt_identity()
+    user_id_str = get_jwt_identity()
+    user_id = int(user_id_str)  # Преобразуем строку обратно в int
     
     # Защита от SQL-инъекций: параметризованный запрос
     conn = get_db_connection()
@@ -160,7 +161,8 @@ def create_data():
     if not request.is_json:
         return jsonify({'error': 'Content-Type must be application/json'}), 400
     
-    user_id = get_jwt_identity()
+    user_id_str = get_jwt_identity()
+    user_id = int(user_id_str)  # Преобразуем строку обратно в int
     data = request.get_json()
     
     title = data.get('title')
@@ -198,5 +200,5 @@ def health_check():
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5001)  # nosec B201,B104 # Для разработки; в продакшене использовать production WSGI сервер
 

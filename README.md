@@ -126,7 +126,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Приложение будет доступно по адресу: `http://localhost:5000`
+Приложение будет доступно по адресу: `http://localhost:5001`
 
 ## Тестирование API
 
@@ -160,7 +160,7 @@ curl -X GET http://localhost:5000/api/data
 
 ### С помощью Postman
 
-1. Создайте новый запрос POST на `http://localhost:5000/auth/login`
+1. Создайте новый запрос POST на `http://localhost:5001/auth/login`
 2. В Body выберите `raw` и `JSON`, введите:
 ```json
 {
@@ -188,11 +188,15 @@ curl -X GET http://localhost:5000/api/data
 ### Локальный запуск проверок:
 
 ```bash
-# Запуск Bandit
-bandit -r .
+# Запуск Bandit (ВАЖНО: исключайте venv!)
+bandit -r . -x venv -x .venv -x env
+# Или сканируйте только ваши файлы:
+bandit app.py test_api.py
 
-# Запуск Safety
-safety check
+# Запуск Safety (требует регистрации на safetycli.com)
+safety scan
+# Или используйте pip-audit как альтернативу:
+pip-audit
 
 # Запуск pip-audit
 pip-audit

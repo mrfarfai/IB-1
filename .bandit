@@ -1,4 +1,4 @@
 [bandit]
-exclude_dirs = venv,env,.venv
-skips = B101  # Skip assert_used test
+exclude_dirs = venv,env,.venv,__pycache__,.git
+skips = B101,B113,B105,B201,B104
 

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Скрипт для тестирования API
-# Убедитесь, что сервер запущен на http://localhost:5000
+# Убедитесь, что сервер запущен на http://localhost:5001
 
-BASE_URL="http://localhost:5000"
+BASE_URL="http://localhost:5001"
 
 echo "=== Тест 1: Аутентификация ==="
 RESPONSE=$(curl -s -X POST $BASE_URL/auth/login \

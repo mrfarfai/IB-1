@@ -38,7 +38,7 @@ python test_api.py
 ./test_api.sh
 
 # Вариант 3: Вручную с curl
-curl -X POST http://localhost:5000/auth/login \
+curl -X POST http://localhost:5001/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "testuser", "password": "testpass123"}'
 ```
@@ -48,11 +48,15 @@ curl -X POST http://localhost:5000/auth/login \
 ### Локальный запуск сканеров:
 
 ```bash
-# Bandit (SAST)
-bandit -r .
+# Bandit (SAST) - ВАЖНО: исключайте venv!
+bandit -r . -x venv -x .venv -x env
+# Или сканируйте только ваши файлы:
+bandit app.py test_api.py
 
-# Safety (SCA)
-safety check
+# Safety (SCA) - требует регистрации
+safety scan
+# Или используйте pip-audit как альтернативу:
+pip-audit
 
 # pip-audit
 pip-audit

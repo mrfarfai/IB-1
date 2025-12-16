@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
 Скрипт для тестирования API
-Убедитесь, что сервер запущен на http://localhost:5000
+Убедитесь, что сервер запущен на http://localhost:5001
 """
 import requests
 import json
 
-BASE_URL = "http://localhost:5000"
+BASE_URL = "http://localhost:5001"
+TIMEOUT = 5  # Timeout для HTTP запросов (секунды)
 
 def print_response(title, response):
     """Красивый вывод ответа"""
@@ -26,7 +27,7 @@ def main():
         "username": "testuser",
         "password": "testpass123"
     }
-    response = requests.post(f"{BASE_URL}/auth/login", json=login_data)
+    response = requests.post(f"{BASE_URL}/auth/login", json=login_data, timeout=TIMEOUT)
     print_response("Ответ на /auth/login", response)
     
     if response.status_code == 200:
@@ -36,7 +37,7 @@ def main():
         # Тест 2: Получение данных с токеном
         print("\n📋 Тест 2: Получение данных (с токеном)")
         headers = {"Authorization": f"Bearer {token}"}
-        response = requests.get(f"{BASE_URL}/api/data", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/data", headers=headers, timeout=TIMEOUT)
         print_response("Ответ на GET /api/data", response)
         
         # Тест 3: Создание данных
@@ -45,12 +46,12 @@ def main():
             "title": "Test Item from Python Script",
             "content": "This is a test content created by test script"
         }
-        response = requests.post(f"{BASE_URL}/api/data", json=new_item, headers=headers)
+        response = requests.post(f"{BASE_URL}/api/data", json=new_item, headers=headers, timeout=TIMEOUT)
         print_response("Ответ на POST /api/data", response)
         
         # Тест 4: Попытка доступа без токена
         print("\n🚫 Тест 4: Попытка доступа без токена (должна вернуть ошибку)")
-        response = requests.get(f"{BASE_URL}/api/data")
+        response = requests.get(f"{BASE_URL}/api/data", timeout=TIMEOUT)
         print_response("Ответ на GET /api/data без токена", response)
         
     else:
@@ -58,7 +59,7 @@ def main():
     
     # Тест 5: Health check
     print("\n💚 Тест 5: Health check")
-    response = requests.get(f"{BASE_URL}/health")
+    response = requests.get(f"{BASE_URL}/health", timeout=TIMEOUT)
     print_response("Ответ на /health", response)
 
 if __name__ == "__main__":
@@ -66,7 +67,7 @@ if __name__ == "__main__":
         main()
     except requests.exceptions.ConnectionError:
         print("❌ Ошибка: Не удалось подключиться к серверу.")
-        print("Убедитесь, что сервер запущен на http://localhost:5000")
+        print("Убедитесь, что сервер запущен на http://localhost:5001")
     except Exception as e:
         print(f"❌ Ошибка: {e}")
 
