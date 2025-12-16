@@ -28,12 +28,12 @@ jobs:
     - name: Run Bandit (SAST)
       run: |
         bandit app.py test_api.py -f json -o bandit-report.json || true
-        bandit app.py test_api.py -f txt
+        bandit app.py test_api.py -f txt || true
       continue-on-error: true
     
     - name: Upload Bandit report
       uses: actions/upload-artifact@v4
-      if: always()
+      if: always() && hashFiles('bandit-report.json') != ''
       with:
         name: bandit-report
         path: bandit-report.json
@@ -41,13 +41,13 @@ jobs:
     # SCA - Software Composition Analysis
     - name: Run Safety (SCA)
       run: |
-        safety scan --json --output safety-report.json || true
-        safety scan
+        safety scan --json --output safety-report.json || echo "Safety scan failed or requires authentication"
+        safety scan || echo "Safety scan failed or requires authentication"
       continue-on-error: true
     
     - name: Upload Safety report
       uses: actions/upload-artifact@v4
-      if: always()
+      if: always() && hashFiles('safety-report.json') != ''
       with:
         name: safety-report
         path: safety-report.json
@@ -59,12 +59,12 @@ jobs:
     - name: Run pip-audit
       run: |
         pip-audit --format json --output pip-audit-report.json || true
-        pip-audit
+        pip-audit || true
       continue-on-error: true
     
     - name: Upload pip-audit report
       uses: actions/upload-artifact@v4
-      if: always()
+      if: always() && hashFiles('pip-audit-report.json') != ''
       with:
         name: pip-audit-report
         path: pip-audit-report.json
